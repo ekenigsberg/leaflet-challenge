@@ -1,0 +1,120 @@
+// https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson
+// Store API query variables
+let strURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson";
+
+// Define arrays to hold earthquake markers
+let arrCir = [];
+
+// Grab the data with d3
+d3.json(strURL, function(jsonResp){
+	let arrFeat = jsonResp.features;
+	console.log(arrFeat);
+	
+	for(let i=0; i < 2; i++){
+		let obj = arrFeat[i];
+		let fltLat = parseFloat(obj.geometry.coordinates[1]);
+		let fltLng = parseFloat(obj.geometry.coordinates[0]);
+		let fltSize = parseFloat(obj.properties.mag);
+		
+		arrCir.push(
+			L.circle([fltLat, fltLng], {
+				stroke: false,
+				fillOpacity: 0.75,
+				color: "purple",
+				fillColor: "purple",
+				radius: 1000000 /*obj.size*/
+			})
+		);	
+	}
+});
+
+arrCir.push(
+	L.circle([0, 0], {
+		stroke: false,
+		fillOpacity: 0.75,
+		color: "purple",
+		fillColor: "purple",
+		radius: 1000000
+	})
+);	
+
+arrCir.forEach(function(obj){
+	console.log('obj:');
+	console.log(obj);	
+});
+
+/*
+if(fltLat !== 0 && fltLng !== 0 && fltSize > 0){
+	arrCir.push(
+		L.circle([fltLat, fltLng], {
+			stroke: false,
+			fillOpacity: 0.75,
+			color: "purple",
+			fillColor: "purple",
+			radius: 1000000
+		})
+	);
+}
+*/
+
+console.log('arrCir:');
+console.log(arrCir);
+
+// Create base layer
+let lgCir = L.layerGroup(arrCir);
+
+// light map tiles
+let light = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+  maxZoom: 18,
+  id: "mapbox.light",
+  accessToken: API_KEY
+});
+
+// dark map tiles
+let dark = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+  maxZoom: 18,
+  id: "mapbox.dark",
+  accessToken: API_KEY
+});
+
+
+let pirates = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+  maxZoom: 18,
+  id: "mapbox.pirates",
+  accessToken: API_KEY
+});
+
+let wheatpaste = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+  maxZoom: 18,
+  id: "mapbox.wheatpaste",
+  accessToken: API_KEY
+});
+
+// Create a baseMaps object to contain the different base maps
+let baseMaps = {
+  Light: light,
+  Dark: dark,
+	Pirates: pirates,
+	Wheatpaste: wheatpaste
+};
+
+// Create an overlayMaps object here to contain the circle layer
+let overlayMaps = {
+  Earthquakes: lgCir
+};
+
+// Modify the map so that it will have the streetmap, states, and cities layers
+let map = L.map("map", {
+  center: [
+    37.09, -95.71
+  ],
+  zoom: 5,
+	layers: [light, lgCir]
+});
+
+// Create a layer control, containing our baseMaps and overlayMaps, and add them to the map
+L.control.layers(baseMaps, overlayMaps).addTo(map);
