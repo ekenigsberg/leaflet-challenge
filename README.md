@@ -7,6 +7,7 @@ to<br/>
 ![Screenshot](https://github.com/ekenigsberg/leaflet-challenge/blob/master/Leaflet-Step-1/Images/screenshot1.png)
 
 # Technical Insights
+* My *huge, huge lesson* from this assignment was that JavaScript does not march linearly through its code. If I put some of my logic *inside* the brackets of a `d3.json(strURL).then(function(data){});` call and some of my logic *outside*, I'll get unpredictable results. ugh.
 * It was nice to learn that markers aren't needed. The `.bindPopup()` method can add pop-ups directly to a shape.
 * I didn't get `scaleLinear()` working quite right (can it map from continuous numbers to discrete colors? not sure), so I just did a math transform and left it at that.
 * It was pleasantly surprising to discover GitHub automatically creates [a reasonably passable map, with markers and popups, from a raw JSON file](https://github.com/ekenigsberg/leaflet-challenge/blob/master/Leaflet-Step-1/static/js/quakes.json).
